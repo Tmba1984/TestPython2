@@ -1,0 +1,32 @@
+pipeline{
+	agent any
+	
+	stages{
+		stage('Git-Checkout'){
+			steps{
+				echo "Checking out from Git Repo Python_Rep"			
+				checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '27461667-09e8-423a-8542-7f7b51421633', url: 'https://github.com/Tmba1984/TestPython2.git']]])
+			}
+		
+		}
+		stage('Build'){
+			steps{
+				echo "Building the checking out project Python_Rep"
+				bat 'mvn clean compile'	
+			}
+		}
+		stage('Test'){
+			steps{
+				echo "Running tests Python_Rep"
+				bat 'mvn test'
+			}
+			
+			post{
+				always{
+					junit '**/target/surefire-reports/TEST-*.xml'
+				}
+			}
+		}
+
+	}
+}
